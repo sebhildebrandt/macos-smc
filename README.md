@@ -34,7 +34,7 @@ Requires Xcode command-line tools (`xcode-select --install`).
 ### Usage
 
 ```js
-const smc = require('macos-smc');
+const smc = require("macos-smc");
 
 smc.chip();
 // { name: 'Apple M5 Max', model: 'Mac17,7', generation: 5, variant: 'Max', cpuCores: 18,
@@ -56,14 +56,28 @@ await smc.sample(1000);
 // }
 ```
 
+### Release Info
+
+```
+npm run build && npm test
+npx biome check .
+npm pack --dry-run
+
+npm version patch/minor/major
+git push
+git push --tags
+npm publish
+
+```
+
 ## Reference
 
-| Function | Result | Source |
-| --- | --- | --- |
-| `version()` | library version | |
-| `chip()` | chip name, model, generation, variant, CPU cores per tier, GPU cores, memory | sysctl, IORegistry |
-| `temperatures()` | CPU / GPU (max, avg, per sensor), battery, SSD, WiFi | SMC |
-| `fans()` | rpm, min, max, target, percent per fan | SMC |
+| Function                   | Result                                                                                                                        | Source                    |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| `version()`                | library version                                                                                                               |                           |
+| `chip()`                   | chip name, model, generation, variant, CPU cores per tier, GPU cores, memory                                                  | sysctl, IORegistry        |
+| `temperatures()`           | CPU / GPU (max, avg, per sensor), battery, SSD, WiFi                                                                          | SMC                       |
+| `fans()`                   | rpm, min, max, target, percent per fan                                                                                        | SMC                       |
 | `sample(intervalMs = 500)` | CPU MHz / usage (total, per tier, per core), GPU MHz / usage, CPU / GPU / ANE / DRAM watts, system / adapter / SoC heat watts | IOReport, IORegistry, SMC |
 
 - Unavailable values are `null`. Fanless machines return `[]` from `fans()`.
