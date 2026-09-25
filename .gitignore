@@ -1,0 +1,60 @@
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Compiled binary addons (http://nodejs.org/api/addons.html)
+build/Release
+
+# MacOS
+.DS_Store
+.Spotlight-V100
+.Trashes
+Icon?
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+*~
+
+# NPM
+node_modules
+npm-debug.log
+npm*
+*.gz
+
+# Other
+*_conflict-
+.notes.txt
+.idea
+*.ipr
+*.iws
+.*.swp
+.svn
+.hg
+CVS
+
+# AI assistants
+.claude/
+.cursor/
+.copilot/
+.opencode/
+.gemini/
+
+# AI prompt/rule files
+**/.rules/
+**/.instructions/
+**/.prompts/
+.github/copilot-instructions.md
+
+# Common AI markdown/config files
+**/AGENTS.md
+**/CLAUDE.md
+**/GEMINI.md
+**/COPILOT.md
+**/AI.md

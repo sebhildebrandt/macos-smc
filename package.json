@@ -1,0 +1,43 @@
+{
+  "name": "macos-smc",
+  "version": "0.1.0",
+  "description": "SMC reader for macOS on Apple Silicon: temperatures, frequencies, power and fans",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib/",
+    "binding.gyp"
+  ],
+  "gypfile": true,
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "keywords": [
+    "macos",
+    "apple silicon",
+    "smc",
+    "cpu",
+    "gpu",
+    "temperature",
+    "frequency",
+    "power",
+    "fan",
+    "sensor"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sebhildebrandt/macos-smc.git"
+  },
+  "scripts": {
+    "install": "node-gyp rebuild",
+    "build": "node-gyp rebuild",
+    "test": "node test/test.js"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.2"
+  }
+}
