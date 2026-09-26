@@ -217,10 +217,11 @@ await smc.sample(1000);
 
 ## News and Changes
 
-| Version | Date       | Comment            |
-| ------- | ---------- | ------------------ |
-| 1.0.0   | 2026-09-26 | first major relase |
-| 0.1.0   | 2026-09-25 | initial release    |
+| Version | Date       | Comment                         |
+| ------- | ---------- | ------------------------------- |
+| 1.0.1   | 2026-09-26 | code refinements / refactorings |
+| 1.0.0   | 2026-09-26 | first major relase              |
+| 0.1.0   | 2026-09-25 | initial release                 |
 
 ### Release Info
 
