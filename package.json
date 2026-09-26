@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "SMC reader for macOS on Apple Silicon: temperatures, frequencies, power and fans",
   "license": "MIT",
-  "author": "Sebastian Hildebrandt <hildebrandt@plus-innocations.com>",
+  "author": "Sebastian Hildebrandt <hildebrandt@plus-innovations.com>",
   "homepage": "https://github.com/sebhildebrandt/macos-smc",
   "bugs": {
     "url": "https://github.com/sebhildebrandt/macos-smc/issues"
