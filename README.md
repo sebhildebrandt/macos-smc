@@ -58,20 +58,6 @@ await smc.sample(1000);
 // }
 ```
 
-### Release Info
-
-```
-npm run build && npm test
-npx biome check .
-npm pack --dry-run
-
-npm version patch/minor/major
-git push
-git push --tags
-npm publish
-
-```
-
 ## Reference
 
 <table>
@@ -235,6 +221,19 @@ npm publish
 | ------- | ---------- | ------------------ |
 | 1.0.0   | 2026-09-26 | first major relase |
 | 0.1.0   | 2026-09-25 | initial release    |
+
+### Release Info
+
+```
+npm run build && npm test
+npx biome check .
+npm pack --dry-run
+
+npm version patch/minor/major
+git push
+git push --tags
+npm publish
+```
 
 ## Credits
 
