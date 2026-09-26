@@ -98,4 +98,5 @@ export function version(): string;
 export function chip(): Chip;
 export function temperatures(): Temperatures;
 export function fans(): Fan[];
+/** @param intervalMs 0–60000, default 500. Rejects with RangeError otherwise. */
 export function sample(intervalMs?: number): Promise<Sample>;

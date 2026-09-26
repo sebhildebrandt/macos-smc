@@ -1,6 +1,7 @@
 #include "ioreport.h"
 
 #include <dlfcn.h>
+#include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -64,13 +65,11 @@ static int wanted(CFDictionaryRef ch) {
 
 static IOReportSubscriptionRef sub = NULL;
 static CFMutableDictionaryRef chans = NULL;
-static int tried = 0;
+static pthread_once_t once = PTHREAD_ONCE_INIT;
 
-static int subscribe(void) {
-  if (sub) return 1;
-  if (tried) return 0;
-  tried = 1;
-  if (!resolve()) return 0;
+// Runs once per process (addon state is shared between worker threads).
+static void subscribe_once(void) {
+  if (!resolve()) return;
 
   const char* groups[][2] = {
       {"Energy Model", NULL},
@@ -92,7 +91,7 @@ static int subscribe(void) {
       CFRelease(c);
     }
   }
-  if (!merged) return 0;
+  if (!merged) return;
 
   chans = CFDictionaryCreateMutableCopy(NULL, CFDictionaryGetCount(merged), merged);
   CFRelease(merged);
@@ -109,6 +108,10 @@ static int subscribe(void) {
   CFMutableDictionaryRef subbed = NULL;
   sub = fCreateSubscription(NULL, chans, &subbed, 0, NULL);
   if (subbed) CFRelease(subbed);
+}
+
+static int subscribe(void) {
+  pthread_once(&once, subscribe_once);
   return sub != NULL;
 }
 
@@ -125,6 +128,7 @@ static void cfstr(CFStringRef s, char* out, size_t n) {
 int ir_delta(CFDictionaryRef a, CFDictionaryRef b, const char* only, ir_channel_t** out, size_t* count) {
   *out = NULL;
   *count = 0;
+  if (!fCreateSamplesDelta) return 1;
   CFDictionaryRef d = fCreateSamplesDelta(a, b, NULL);
   if (!d) return 1;
 

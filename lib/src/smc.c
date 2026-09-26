@@ -1,6 +1,7 @@
 #include "smc.h"
 
 #include <IOKit/IOKitLib.h>
+#include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -44,7 +45,7 @@ typedef struct {
 } smc_key_t;
 
 static io_connect_t conn = 0;
-static int tried = 0;
+static pthread_once_t once = PTHREAD_ONCE_INIT;
 static smc_key_t* keys = NULL;
 static size_t key_count = 0;
 
@@ -93,21 +94,21 @@ static void scan_keys(void) {
   }
 }
 
-static int smc_open(void) {
-  if (conn) return 1;
-  if (tried) return 0;
-  tried = 1;
-
+// Runs once per process (addon state is shared between worker threads).
+static void smc_open_once(void) {
   io_service_t svc = IOServiceGetMatchingService(kIOMainPortDefault, IOServiceMatching("AppleSMC"));
-  if (!svc) return 0;
-  kern_return_t kr = IOServiceOpen(svc, mach_task_self(), 0, &conn);
+  if (!svc) return;
+  io_connect_t c = 0;
+  kern_return_t kr = IOServiceOpen(svc, mach_task_self(), 0, &c);
   IOObjectRelease(svc);
-  if (kr != KERN_SUCCESS) {
-    conn = 0;
-    return 0;
-  }
+  if (kr != KERN_SUCCESS) return;
+  conn = c;
   scan_keys();
-  return 1;
+}
+
+static int smc_open(void) {
+  pthread_once(&once, smc_open_once);
+  return conn != 0;
 }
 
 static int read_value(const smc_key_t* k, double* out) {

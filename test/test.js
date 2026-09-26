@@ -28,6 +28,10 @@ const inRange = (v, lo, hi) => v === null || (v >= lo && v <= hi);
   console.log('Fans:', f);
   for (const fan of f) assert.ok(inRange(fan.percent, 0, 100));
 
+  for (const bad of [Number.NaN, Infinity, -1, 60001, '500']) {
+    await assert.rejects(smc.sample(bad), RangeError);
+  }
+
   // macOS 27 updates CPU energy every ~2.1 s; a first call may not see two updates yet
   let s = await smc.sample(2500);
   if (s.cpu.watts === null) s = await smc.sample(2500);

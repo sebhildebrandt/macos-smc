@@ -54,6 +54,15 @@ static napi_value js_smc_read(napi_env env, napi_callback_info info) {
   return arr;
 }
 
+// Tags our IOReport sample externals so irDelta rejects foreign ones.
+static const napi_type_tag SAMPLE_TAG = {0x6d61636f73736d63ULL, 0x6972736d706c6531ULL};
+
+static int get_sample(napi_env env, napi_value v, void** out) {
+  bool ok = false;
+  return napi_check_object_type_tag(env, v, &SAMPLE_TAG, &ok) == napi_ok && ok &&
+         napi_get_value_external(env, v, out) == napi_ok;
+}
+
 static void release_sample(napi_env env, void* data, void* hint) { CFRelease((CFDictionaryRef)data); }
 
 static napi_value js_ir_sample(napi_env env, napi_callback_info info) {
@@ -63,7 +72,12 @@ static napi_value js_ir_sample(napi_env env, napi_callback_info info) {
     napi_get_null(env, &res);
     return res;
   }
-  napi_create_external(env, (void*)s, release_sample, NULL, &res);
+  if (napi_create_external(env, (void*)s, release_sample, NULL, &res) != napi_ok) {
+    CFRelease(s);
+    napi_get_null(env, &res);
+    return res;
+  }
+  napi_type_tag_object(env, res, &SAMPLE_TAG);
   return res;
 }
 
@@ -75,8 +89,7 @@ static napi_value js_ir_delta(napi_env env, napi_callback_info info) {
   char only[64] = {0};
   size_t len;
   int filter = argc > 2 && napi_get_value_string_utf8(env, argv[2], only, sizeof(only), &len) == napi_ok;
-  if (argc < 2 || napi_get_value_external(env, argv[0], &a) != napi_ok ||
-      napi_get_value_external(env, argv[1], &b) != napi_ok) {
+  if (argc < 2 || !get_sample(env, argv[0], &a) || !get_sample(env, argv[1], &b)) {
     napi_throw_type_error(env, NULL, "irDelta(a, b, channel?): samples expected");
     return NULL;
   }
