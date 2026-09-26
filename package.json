@@ -1,6 +1,6 @@
 {
   "name": "macos-smc",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "SMC reader for macOS on Apple Silicon: temperatures, frequencies, power and fans",
   "license": "MIT",
   "author": "Sebastian Hildebrandt <hildebrandt@plus-innocations.com>",
