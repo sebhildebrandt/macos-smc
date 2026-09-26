@@ -32,6 +32,12 @@ const inRange = (v, lo, hi) => v === null || (v >= lo && v <= hi);
     await assert.rejects(smc.sample(bad), RangeError);
   }
 
+  const s0 = await smc.sample(0);
+  assert.ok(
+    s0.gpu.usage !== null || s0.gpu.mhz === null,
+    'gpu.mhz without data',
+  );
+
   // macOS 27 updates CPU energy every ~2.1 s; a first call may not see two updates yet
   let s = await smc.sample(2500);
   if (s.cpu.watts === null) s = await smc.sample(2500);
