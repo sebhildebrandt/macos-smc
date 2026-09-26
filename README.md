@@ -1,3 +1,7 @@
+# macos-smc
+
+Hardware sensor library for [node.js][nodejs-url] on macOS (Apple Silicon): CPU/GPU temperatures, CPU/GPU frequencies and utilization, power draw and fans.
+
 ```
                         ___  ____
   _ __ ___   __ _  ___ / _ \/ ___|       ___ _ __ ___   ___
@@ -5,11 +9,9 @@
  | | | | | | (_| | (__| |_| |___) |_____\__ \ | | | | | (__
  |_| |_| |_|\__,_|\___|\___/|____/      |___/_| |_| |_|\___|
 
+  macOS (Apple Silicon - ARM) - SMC hardware sensor library
+
 ```
-
-# macos-smc
-
-Hardware sensor library for [node.js][nodejs-url] on macOS (Apple Silicon): CPU/GPU temperatures, CPU/GPU frequencies and utilization, power draw and fans.
 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
@@ -72,13 +74,151 @@ npm publish
 
 ## Reference
 
-| Function                   | Result                                                                                                                        | Source                    |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| `version()`                | library version                                                                                                               |                           |
-| `chip()`                   | chip name, model, generation, variant, CPU cores per tier, GPU cores, memory                                                  | sysctl, IORegistry        |
-| `temperatures()`           | CPU / GPU (max, avg, per sensor), battery, SSD, WiFi                                                                          | SMC                       |
-| `fans()`                   | rpm, min, max, target, percent per fan                                                                                        | SMC                       |
-| `sample(intervalMs = 500)` | CPU MHz / usage (total, per tier, per core), GPU MHz / usage, CPU / GPU / ANE / DRAM watts, system / adapter / SoC heat watts | IOReport, IORegistry, SMC |
+<table>
+  <tr><th>Function</th><th>Result</th><th>Source</th></tr>
+  <tr><td><code>version()</code></td><td>library version</td><td></td></tr>
+  <tr><td><code>chip()</code></td><td>chip name, model, generation, variant, CPU cores per tier, GPU cores, memory</td><td>sysctl, IORegistry</td></tr>
+  <tr><td></td><td colspan="2"><details><pre>
+{
+  "name": "Apple M5 Max",
+  "model": "Mac17,7",
+  "generation": 5,
+  "variant": "Max",
+  "cpuCores": 18,
+  "tiers": [
+    {
+      "name": "Super",
+      "cores": 6
+    },
+    {
+      "name": "Performance",
+      "cores": 12
+    }
+  ],
+  "gpuCores": 40,
+  "memoryBytes": 137438953472
+}
+</pre></details></td></tr>
+  <tr><td><code>temperatures()</code></td><td>CPU / GPU (max, avg, per sensor), battery, SSD, WiFi</td><td>SMC</td></tr>
+  <tr><td></td><td colspan="2"><details><pre>
+{
+  "cpu": {
+    "max": 45.734375,
+    "avg": 45.62907608695652,
+    "sensors": [
+      {
+        "key": "Tp00",
+        "value": 45.734375
+      },
+      {
+        "key": "Tp04",
+        "value": 45.671875
+      },
+      ...
+    ]
+  },
+  "gpu": {
+    "max": 45.4375,
+    "avg": 44.899925595238095,
+    "sensors": [
+      {
+        "key": "Tg08",
+        "value": 45.015625
+      },
+      {
+        "key": "Tg0C",
+        "value": 45
+      },
+      ...
+    ]
+  },
+  "battery": 32.96666463216146,
+  "ssd": 35.97265625,
+  "wifi": 43.059783935546875
+}
+</pre></details></td></tr>
+  <tr><td><code>fans()</code></td><td>rpm, min, max, target, percent per fan</td><td>SMC</td></tr>
+  <tr><td></td><td colspan="2"><details><pre>
+[
+  {
+    "id": 0,
+    "rpm": 2314,
+    "min": 2317,
+    "max": 7826,
+    "target": 2317,
+    "percent": 0
+  },
+  {
+    "id": 1,
+    "rpm": 2504,
+    "min": 2317,
+    "max": 7826,
+    "target": 2502,
+    "percent": 3.4
+  }
+]
+</pre></details></td></tr>
+  <tr><td><code>sample(intervalMs = 500)</code></td><td>CPU MHz / usage (total, per tier, per core), GPU MHz / usage, CPU / GPU / ANE / DRAM watts, system / adapter / SoC heat watts</td><td>IOReport, IORegistry, SMC</td></tr>
+  <tr><td></td><td colspan="2"><details><pre>
+{
+  "interval": 1007,
+  "cpu": {
+    "mhz": 4370,
+    "usage": 78,
+    "watts": null,
+    "tiers": [
+      {
+        "name": "Super",
+        "cores": 6,
+        "mhz": 4572,
+        "maxMhz": 4608,
+        "usage": 80.6
+      },
+      {
+        "name": "Performance",
+        "cores": 12,
+        "mhz": 4264,
+        "maxMhz": 4380,
+        "usage": 76.7
+      }
+    ],
+    "cores": [
+      {
+        "name": "MCPU00",
+        "tier": "Performance",
+        "mhz": 4186,
+        "usage": 83.1
+      },
+      ...
+      {
+        "name": "PCPU0",
+        "tier": "Super",
+        "mhz": 4545,
+        "usage": 83.2
+      },
+      ...
+    ]
+  },
+  "gpu": {
+    "mhz": 338,
+    "maxMhz": 1620,
+    "usage": 2.9,
+    "watts": 0.03
+  },
+  "ane": {
+    "watts": null
+  },
+  "dram": {
+    "watts": null
+  },
+  "system": {
+    "watts": 7,
+    "adapterWatts": 0,
+    "socHeatWatts": 36.12
+  }
+}
+</pre></details></td></tr>
+</table>
 
 - Unavailable values are `null`. Fanless machines return `[]` from `fans()`.
 - `mhz` is the residency-weighted frequency while active. `usage` is the active residency.
@@ -91,9 +231,10 @@ npm publish
 
 ## News and Changes
 
-| Version | Date       | Comment         |
-| ------- | ---------- | --------------- |
-| 0.1.0   | 2026-09-25 | initial release |
+| Version | Date       | Comment            |
+| ------- | ---------- | ------------------ |
+| 1.0.0   | 2026-09-26 | first major relase |
+| 0.1.0   | 2026-09-25 | initial release    |
 
 ## Credits
 
@@ -101,7 +242,7 @@ Written by Sebastian Hildebrandt [sebhildebrandt](https://github.com/sebhildebra
 
 ## Copyright Information
 
-Apple and macOS are registered trademarks of Apple Inc., Node.js is a trademark of OpenJS Foundation.
+Apple and macOS are registered trademarks of Apple Inc., Node.js is a trademark of OpenJS Foundation. ARM is a registered trademarks of Arm Limited.
 All other trademarks are the property of their respective owners.
 
 ## License [![MIT license][license-img]][license-url]
