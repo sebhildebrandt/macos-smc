@@ -127,3 +127,9 @@ export function sample(intervalMs?: number): Promise<Sample>;
  * The first call (or one more than 5 s after the previous) measures ~100 ms, calls less than 50 ms apart wait for the rest.
  */
 export function frequencies(): Promise<Frequencies>;
+/**
+ * Disables the unified buffer cache for a file descriptor opened by node (fcntl F_NOCACHE),
+ * e.g. to measure real disk throughput. Already cached pages are not evicted - set it before writing.
+ * @returns true if the flag was set
+ */
+export function noCache(fd: number): boolean;

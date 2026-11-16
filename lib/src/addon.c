@@ -1,3 +1,4 @@
+#include <fcntl.h>
 #include <node_api.h>
 #include <stdlib.h>
 #include <string.h>
@@ -192,6 +193,21 @@ static napi_value js_gpu_cores(napi_env env, napi_callback_info info) {
   return res;
 }
 
+// F_NOCACHE on a descriptor opened by node - reads / writes bypass the unified buffer cache
+static napi_value js_no_cache(napi_env env, napi_callback_info info) {
+  size_t argc = 1;
+  napi_value argv[1];
+  int32_t fd = -1;
+  napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+  if (argc < 1 || napi_get_value_int32(env, argv[0], &fd) != napi_ok || fd < 0) {
+    napi_throw_type_error(env, NULL, "noCache(fd): file descriptor expected");
+    return NULL;
+  }
+  napi_value res;
+  napi_get_boolean(env, fcntl(fd, F_NOCACHE, 1) != -1, &res);
+  return res;
+}
+
 static napi_value Init(napi_env env, napi_value exports) {
   const struct {
     const char* name;
@@ -199,7 +215,7 @@ static napi_value Init(napi_env env, napi_value exports) {
   } fns[] = {
       {"smcRead", js_smc_read}, {"irSample", js_ir_sample}, {"irDelta", js_ir_delta},
       {"pmgr", js_pmgr},        {"sysctlString", js_sysctl_string}, {"sysctlNumber", js_sysctl_number},
-      {"gpuCores", js_gpu_cores},
+      {"gpuCores", js_gpu_cores}, {"noCache", js_no_cache},
   };
   for (size_t i = 0; i < sizeof(fns) / sizeof(fns[0]); i++) {
     napi_value f;

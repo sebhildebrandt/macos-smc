@@ -78,6 +78,19 @@ const inRange = (v, lo, hi) => v === null || (v >= lo && v <= hi);
     assert.ok(core.minMhz > 0 && core.maxMhz >= core.minMhz);
     assert.ok(core.mhz === null || core.mhz <= core.maxMhz);
   }
+
+  // F_NOCACHE on a descriptor node opened itself
+  const fsp = require('node:fs/promises');
+  const tmp = require('node:path').join(require('node:os').tmpdir(), `macos-smc-${process.pid}.tmp`);
+  const handle = await fsp.open(tmp, 'w');
+  try {
+    assert.strictEqual(smc.noCache(handle.fd), true);
+  } finally {
+    await handle.close();
+    await fsp.rm(tmp, { force: true });
+  }
+  assert.throws(() => smc.noCache(-1), TypeError);
+
 })().catch((e) => {
   console.error(e);
   process.exit(1);
