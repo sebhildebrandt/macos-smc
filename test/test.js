@@ -60,6 +60,24 @@ const inRange = (v, lo, hi) => v === null || (v >= lo && v <= hi);
   assert.ok(s.gpu.maxMhz > 0);
   assert.ok(s.cpu.watts > 0, 'no CPU power');
   assert.ok(inRange(s.system.watts, 0, 500));
+
+  // first call measures itself, the next ones use the delta since the previous call
+  const f1 = await smc.frequencies();
+  await new Promise((r) => setTimeout(r, 200));
+  const t0 = Date.now();
+  const f2 = await smc.frequencies();
+  console.log('Frequencies:', {
+    interval: f2.interval,
+    mhz: f2.cpu.mhz,
+    tiers: f2.cpu.tiers,
+  });
+  assert.ok(f1.interval > 0 && f2.interval >= 200);
+  assert.ok(Date.now() - t0 < 50, 'frequencies() should not wait');
+  assert.strictEqual(f2.cpu.cores.length, c.cpuCores);
+  for (const core of f2.cpu.cores) {
+    assert.ok(core.minMhz > 0 && core.maxMhz >= core.minMhz);
+    assert.ok(core.mhz === null || core.mhz <= core.maxMhz);
+  }
 })().catch((e) => {
   console.error(e);
   process.exit(1);

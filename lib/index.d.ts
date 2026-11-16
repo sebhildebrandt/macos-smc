@@ -94,9 +94,36 @@ export interface Sample {
   };
 }
 
+export interface CpuCoreFrequency extends CpuCoreSample {
+  /** lowest / highest DVFS state of this core */
+  minMhz: number | null;
+  maxMhz: number | null;
+}
+
+export interface Frequencies {
+  /** measured interval in ms (time since the previous call) */
+  interval: number;
+  cpu: {
+    mhz: number | null;
+    usage: number | null;
+    tiers: CpuTierSample[];
+    cores: CpuCoreFrequency[];
+  };
+  gpu: {
+    mhz: number | null;
+    maxMhz: number | null;
+    usage: number | null;
+  };
+}
+
 export function version(): string;
 export function chip(): Chip;
 export function temperatures(): Temperatures;
 export function fans(): Fan[];
 /** @param intervalMs 0–60000, default 500. Rejects with RangeError otherwise. */
 export function sample(intervalMs?: number): Promise<Sample>;
+/**
+ * CPU / GPU frequencies and usage since the previous call - returns without waiting.
+ * The first call measures ~100 ms, calls less than 50 ms apart wait for the rest.
+ */
+export function frequencies(): Promise<Frequencies>;
