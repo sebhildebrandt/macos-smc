@@ -58,7 +58,7 @@ await smc.sample(1000);
 // }
 
 await smc.frequencies();
-// CPU / GPU frequencies since the previous call - no waiting (first call measures ~100 ms)
+// CPU / GPU frequencies since the previous call - no waiting (first call, or after a pause > 5 s, measures ~100 ms)
 // { interval, cpu: { mhz, usage, tiers, cores: [{ name, tier, mhz, minMhz, maxMhz, usage }] }, gpu: { mhz, maxMhz, usage } }
 ```
 
@@ -149,7 +149,7 @@ await smc.frequencies();
 ]
 </pre></details></td></tr>
   <tr><td><code>sample(intervalMs = 500)</code></td><td>CPU MHz / usage (total, per tier, per core), GPU MHz / usage, CPU / GPU / ANE / DRAM watts, system / adapter / SoC heat watts</td><td>IOReport, IORegistry, SMC</td></tr>
-  <tr><td><code>frequencies()</code></td><td>CPU MHz / usage (total, per tier, per core incl. min / max MHz), GPU MHz / usage - measured since the previous call, returns without waiting (first call measures ~100 ms)</td><td>IOReport, IORegistry</td></tr>
+  <tr><td><code>frequencies()</code></td><td>CPU MHz / usage (total, per tier, per core incl. min / max MHz), GPU MHz / usage - measured since the previous call, returns without waiting (first call, or after a pause > 5 s, measures ~100 ms)</td><td>IOReport, IORegistry</td></tr>
   <tr><td></td><td colspan="2"><details><pre>
 {
   "interval": 1007,
@@ -224,6 +224,7 @@ await smc.frequencies();
 
 | Version | Date       | Comment                         |
 | ------- | ---------- | ------------------------------- |
+| 1.1.1   | 2026-11-16 | `frequencies()` fix after pauses |
 | 1.1.0   | 2026-11-16 | added `frequencies()`           |
 | 1.0.1   | 2026-09-26 | code refinements / refactorings |
 | 1.0.0   | 2026-09-26 | first major relase              |

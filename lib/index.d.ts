@@ -124,6 +124,6 @@ export function fans(): Fan[];
 export function sample(intervalMs?: number): Promise<Sample>;
 /**
  * CPU / GPU frequencies and usage since the previous call - returns without waiting.
- * The first call measures ~100 ms, calls less than 50 ms apart wait for the rest.
+ * The first call (or one more than 5 s after the previous) measures ~100 ms, calls less than 50 ms apart wait for the rest.
  */
 export function frequencies(): Promise<Frequencies>;
